@@ -57,9 +57,26 @@ def attach_to_container(redirect_output=True, output_file="container_output.txt"
     except KeyboardInterrupt:
         print("Abbruch: Docker-Container-Anhängen wurde unterbrochen.")
 
+def read_pattern_from_file(file_path):
+    try:
+        with open(file_path, "r") as file:
+            for line in file:
+                if line.startswith("pattern="):
+                    pattern = line.split("=", 1)[1].strip()
+                    return pattern
+        print(f"Pattern nicht in der Datei {file_path} gefunden.")
+        return None
+    except FileNotFoundError:
+        print(f"Datei {file_path} nicht gefunden.")
+        return None
+    except Exception as e:
+        print(f"Fehler beim Lesen der Datei {file_path}: {e}")
+        return None
+
 if __name__ == "__main__":
+    pattern = read_pattern_from_file("config.txt")
     run_docker_compose()
-    attach_to_container(redirect_output=True, output_file="container_output.txt", pattern = "^lte")
+    attach_to_container(redirect_output=True, output_file="container_output.txt", pattern = pattern)
 
 
 
