@@ -11,7 +11,6 @@ def db_dashboard():
 
     with container_DB:
 
-        
 
         # Prüfen, welche Messungen bereits existieren, und die nächste Nummer bestimmen
         existing_collections = backupDB.list_collection_names()
@@ -24,40 +23,39 @@ def db_dashboard():
         option = st.selectbox(
             "Wähle eine Messung aus!", (existing_collections)
         )
-            
+
         st.write("Du hast: ", option)
 
-        col1, col2 = st.columns(2)
-
-        with col1:
-            UL_brate = st.empty()
-            DL_brate = st.empty()
-
-        with col2:
-            DL_ok = st.empty()
-            UL_ok = st.empty()
-
         collection = backupDB[option]
+        
+        doc = collection.find_one()
+
+        field_names = list(doc.keys())
+        field_names.remove('_id')
+        field_names.remove('time')
+
+        # Layout für die Charts
+        cols = st.columns(2)
+        chart_containers = {}
+
+        # Create empty containers for each field to store charts
+        for idx, field in enumerate(field_names):
+            col_idx = idx % 2  # Alternate columns
+            with cols[col_idx]:
+                st.subheader(field)
+                chart_containers[field] = st.empty()
+        
 
         all_data = list(collection.find({}, {"_id": 0}))
 
-        # Daten in separate Listen für Streamlit umwandeln
-        times = [record['time'] for record in all_data]
-        UL_brate_values = [record['UL_brate'] for record in all_data]
-        DL_brate_values = [record['DL_brate'] for record in all_data]
-        UL_ok_values = [record['UL_ok'] for record in all_data]
-        DL_ok_values = [record['DL_ok'] for record in all_data]
 
-        # Daten in Streamlit anzeigen
-        with UL_brate.container():
-            st.header("UL_brate")
-            st.line_chart({'time': times, 'UL_brate': UL_brate_values}, x = 'time', y = 'UL_brate')
-            st.header("DL_brate")
-            st.line_chart({'time': times, 'DL_brate': DL_brate_values}, x = 'time', y = 'DL_brate')
+        if all_data:
+            # Daten in separate Listen für Streamlit umwandeln
+            times = [record['time'] for record in all_data]
+            data_dict = {field: [record[field] for record in all_data] for field in field_names}
 
-        with DL_ok.container():
-            st.header("UL_ok")
-            st.line_chart({'time': times, 'UL_ok': UL_ok_values}, x = 'time', y = 'UL_ok')
-            st.header("DL_ok")
-            st.line_chart({'time': times, 'DL_ok': DL_ok_values}, x = 'time', y = 'DL_ok')
+            # Daten in Streamlit anzeigen
+            for field, values in data_dict.items():
+                chart_containers[field].line_chart({"time": times, field: values}, x='time', y=field)
+
 

@@ -48,17 +48,20 @@ def rt_dashboard():
 
     config = load_config()
     field_names = config["field_names"]
+    print(field_names)
+
+    # Layout für die Charts
+    cols = st.columns(2)
+    chart_containers = {}
+
+    # Create empty containers for each field to store charts
+    for idx, field in enumerate(field_names):
+        col_idx = idx % 2  # Alternate columns
+        with cols[col_idx]:
+            st.subheader(field)
+            chart_containers[field] = st.empty()
+
     
-
-    col1, col2 = st.columns(2)
-
-    with col1:
-        ul_brate_chart = st.empty()
-        dl_brate_chart = st.empty()
-
-    with col2:
-        dl_ok_chart = st.empty()
-        ul_ok_chart = st.empty()
 
     def add_row(data):
         current_time = datetime.now().strftime("%H:%M:%S")
@@ -114,16 +117,12 @@ def rt_dashboard():
         if all_data:
             # Daten in separate Listen für Streamlit umwandeln
             times = [record['time'] for record in all_data]
-            ul_brate_values = [record['UL_brate'] for record in all_data]
-            dl_brate_values = [record['DL_brate'] for record in all_data]
-            ul_ok_values = [record['UL_ok'] for record in all_data]
-            dl_ok_values = [record['DL_ok'] for record in all_data]
+            data_dict = {field: [record[field] for record in all_data] for field in field_names}
 
             # Daten in Streamlit anzeigen
-            ul_brate_chart.line_chart({"time": times, "UL_brate": ul_brate_values}, x = 'time', y = 'UL_brate')
-            dl_brate_chart.line_chart({"time": times, "DL_brate": dl_brate_values}, x = 'time', y = 'DL_brate')
-            ul_ok_chart.line_chart({"time": times, "UL_ok": ul_ok_values}, x = 'time', y = 'UL_ok')
-            dl_ok_chart.line_chart({"time": times, "DL_ok": dl_ok_values}, x = 'time', y = 'DL_ok')
+            for field, values in data_dict.items():
+                chart_containers[field].line_chart({"time": times, field: values}, x='time', y=field)
+
 
     while True:
         process_data()
