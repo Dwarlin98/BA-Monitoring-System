@@ -1,0 +1,20 @@
+field_names:
+- rat
+- pci
+- rnti
+- DL_cqi
+- DL_ri
+- DL_mcs
+- DL_brate
+- DL_ok
+- DL_nok
+- DL_percent
+- UL_pusch
+- UL_pucch
+- UL_phr
+- UL_mcs
+- UL_brate
+- UL_ok
+- UL_nok
+- UL_percent
+- UL_bsr

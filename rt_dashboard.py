@@ -5,6 +5,7 @@ import json
 from pymongo import MongoClient
 import threading
 import queue
+import time
 
 HOST = '127.0.0.1'  # localhost
 PORT = 65432        # Port über 1023 wählen
@@ -30,9 +31,6 @@ collection = db[new_collection_name]
 
 data_queue = queue.Queue()
 
-# TBD es muss noch geändert werden das die daten die ganze Zeit geplotet werden irgendwie wird die Funktion add_row nichtmehr ausgeführt ...
-# Ging jetzt aber muss beobachtet werden !!!
-
 # Funktion für die Messungen-Seite
 def rt_dashboard():
     
@@ -44,23 +42,16 @@ def rt_dashboard():
     col1, col2 = st.columns(2)
 
     with col1:
-        UL_brate = st.empty()
-        DL_brate = st.empty()
+        ul_brate_chart = st.empty()
+        dl_brate_chart = st.empty()
 
     with col2:
-        DL_ok = st.empty()
-        UL_ok = st.empty()
-
+        dl_ok_chart = st.empty()
+        ul_ok_chart = st.empty()
 
     def add_row(data):
         current_time = datetime.now().strftime("%H:%M:%S")
         data_with_time = {"time": current_time}
-
-
-        # Debugging-Ausgabe, um die empfangenen Daten zu überprüfen
-        print(f"Empfangene Daten (entpackt): {data}")
-        print(f"Anzahl empfangener Daten (entpackt): {len(data)}")
-        print(f"Anzahl erwarteter Felder: {len(field_names)}")
 
         # Verwende zip, um Feldnamen und Daten zu kombinieren
         if len(data) == len(field_names):
@@ -69,72 +60,61 @@ def rt_dashboard():
         else:
             print("Daten und Feldnamen stimmen nicht überein")
 
-        # Debugging-Ausgabe, um sicherzustellen, dass die Daten korrekt sind
-        print(data_with_time)
-
         # Daten in die MongoDB einfügen
         collection.insert_one(data_with_time)
 
+    # Socket erstellen und im Hintergrund laufen lassen
+    def socket_thread():
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:
+            server_socket.bind((HOST, PORT))
+            server_socket.listen()
+            print('Server wartet auf Verbindung...')
+            connection, address = server_socket.accept()
+            with connection:
+                print('Verbunden mit:', address)
+                while True:
+                    data = connection.recv(1024)
+                    if not data:
+                        break
+                    decoded_data = json.loads(data.decode())
+                    print(f"Decodierte Daten: {decoded_data}")
+                    data_queue.put(decoded_data)
+
+    def data_processor_thread():
+        while True:
+            while not data_queue.empty():
+                data = data_queue.get()
+                add_row(data)
+            time.sleep(1)
+
+    if 'threads_started' not in st.session_state:
+        st.session_state.threads_started = True
+        threading.Thread(target=socket_thread, daemon=True).start()
+        threading.Thread(target=data_processor_thread, daemon=True).start()
 
     def process_data():
-        # Aktuelle Zeit und Zeit vor X Minuten bestimmen
+        # Aktuelle Zeit und Zeit vor 1 Minute bestimmen
         current_time = datetime.now()
-        three_minutes_ago = current_time - timedelta(minutes=1)
+        one_minute_ago = current_time - timedelta(minutes=1)
 
-        # Daten aus MongoDB lesen, die innerhalb der letzten 3 Minuten liegen
-        all_data = list(collection.find({"time": {"$gte": three_minutes_ago.strftime("%H:%M:%S")}}, {"_id": 0}))
+        # Daten aus MongoDB lesen, die innerhalb der letzten Minute liegen
+        all_data = list(collection.find({"time": {"$gte": one_minute_ago.strftime("%H:%M:%S")}}, {"_id": 0}))
 
-        # Daten in separate Listen für Streamlit umwandeln
-        times = [record['time'] for record in all_data]
-        UL_brate_values = [record['UL_brate'] for record in all_data]
-        DL_brate_values = [record['DL_brate'] for record in all_data]
-        UL_ok_values = [record['UL_ok'] for record in all_data]
-        DL_ok_values = [record['DL_ok'] for record in all_data]
+        if all_data:
+            # Daten in separate Listen für Streamlit umwandeln
+            times = [record['time'] for record in all_data]
+            ul_brate_values = [record['UL_brate'] for record in all_data]
+            dl_brate_values = [record['DL_brate'] for record in all_data]
+            ul_ok_values = [record['UL_ok'] for record in all_data]
+            dl_ok_values = [record['DL_ok'] for record in all_data]
 
-        # Daten in Streamlit anzeigen
-        with UL_brate.container():
-            st.header("UL_brate")
-            st.line_chart({'time': times, 'UL_brate': UL_brate_values}, x = 'time', y = 'UL_brate')
-            st.header("DL_brate")
-            st.line_chart({'time': times, 'DL_brate': DL_brate_values}, x = 'time', y = 'DL_brate')
-
-        with DL_ok.container():
-            st.header("UL_ok")
-            st.line_chart({'time': times, 'UL_ok': UL_ok_values}, x = 'time', y = 'UL_ok')
-            st.header("DL_ok")
-            st.line_chart({'time': times, 'DL_ok': DL_ok_values}, x = 'time', y = 'DL_ok')
-
-    # Socket erstellen und im Hintergrund laufen lassen
-    if 'socket_started' not in st.session_state:
-        st.session_state.socket_started = True
-
-        def socket_thread():
-            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:
-                server_socket.bind((HOST, PORT))
-                server_socket.listen()
-                print('Server wartet auf Verbindung...')
-                connection, address = server_socket.accept()
-                with connection:
-                    print('Verbunden mit:', address)
-                    while True:
-                        data = connection.recv(1024)
-                        if not data:
-                            break
-                        decoded_data = json.loads(data.decode())
-                        print(f"Decodierte Daten: {decoded_data}")
-                        data_queue.put(decoded_data)
-        
-
-        threading.Thread(target=socket_thread, daemon=True).start()
-        print('Socket-Thread gestartet')
-
-    # Daten in regelmäßigen Abständen aktualisieren
-    def update_data():
-        while not data_queue.empty():
-            data = data_queue.get()
-            add_row(data)
-        process_data()
+            # Daten in Streamlit anzeigen
+            ul_brate_chart.line_chart({"time": times, "UL_brate": ul_brate_values}, x = 'time', y = 'UL_brate')
+            dl_brate_chart.line_chart({"time": times, "DL_brate": dl_brate_values}, x = 'time', y = 'DL_brate')
+            ul_ok_chart.line_chart({"time": times, "UL_ok": ul_ok_values}, x = 'time', y = 'UL_ok')
+            dl_ok_chart.line_chart({"time": times, "DL_ok": dl_ok_values}, x = 'time', y = 'DL_ok')
 
     while True:
-        update_data()
+        process_data()
+        time.sleep(1)
 
