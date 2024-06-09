@@ -16,16 +16,16 @@ def db_dashboard():
         # Prüfen, welche Messungen bereits existieren, und die nächste Nummer bestimmen
         existing_collections = backupDB.list_collection_names()
         
-        st.title("Andere Seite")
-        st.write("Dies ist die andere Seite, die noch ausformuliert werden muss.")
+        st.title("Monitoring-System der Fakultät für Digitale Transformation")   
+        #st.write("Hier können Sie allgemeine Informationen anzeigen oder Aktionen durchführen.")    
+
+        st.header("Datenbank-Dashboard")
 
         option = st.selectbox(
             "Wähle eine Messung aus!", (existing_collections)
         )
             
         st.write("Du hast: ", option)
-        
-        st.image('HTWK.jpg', use_column_width=True)
 
         col1, col2 = st.columns(2)
 

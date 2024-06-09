@@ -6,6 +6,7 @@ from pymongo import MongoClient
 import threading
 import queue
 import time
+import yaml
 
 HOST = '127.0.0.1'  # localhost
 PORT = 65432        # Port über 1023 wählen
@@ -33,11 +34,21 @@ data_queue = queue.Queue()
 
 # Funktion für die Messungen-Seite
 def rt_dashboard():
-    
-    # Definiere die Feldnamen entsprechend der ursprünglichen Spaltennamen
-    field_names = ['rat', 'pci', 'rnti', 'DL_cqi', 'DL_ri', 'DL_mcs', 'DL_brate', 'DL_ok', 'DL_nok', 'DL_percent', 'UL_pusch', 'UL_pucch', 'UL_phr', 'UL_mcs', 'UL_brate', 'UL_ok', 'UL_nok', 'UL_percent', 'UL_bsr']
 
-    st.image('HTWK.jpg', use_column_width=True)
+    st.title("Monitoring-System der Fakultät für Digitale Transformation")  
+        #st.write("Hier können Sie allgemeine Informationen anzeigen oder Aktionen durchführen.")    
+
+    st.header("Live-Dashboard")
+
+    # Konfigurationsdatei laden
+    def load_config():
+        with open("config.yaml", "r") as file:
+            config = yaml.safe_load(file)
+        return config
+
+    config = load_config()
+    field_names = config["field_names"]
+    
 
     col1, col2 = st.columns(2)
 
