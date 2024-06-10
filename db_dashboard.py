@@ -1,5 +1,6 @@
 import streamlit as st
 from pymongo import MongoClient
+import plotly.graph_objs as go
 
 clientDB = MongoClient("mongodb://localhost:27017/")
 backupDB = clientDB["Messungen"]
@@ -42,7 +43,7 @@ def db_dashboard():
         for idx, field in enumerate(field_names):
             col_idx = idx % 2  # Alternate columns
             with cols[col_idx]:
-                st.subheader(field)
+                #st.subheader(field)
                 chart_containers[field] = st.empty()
         
 
@@ -56,6 +57,8 @@ def db_dashboard():
 
             # Daten in Streamlit anzeigen
             for field, values in data_dict.items():
-                chart_containers[field].line_chart({"time": times, field: values}, x='time', y=field)
-
-
+                # Plotly chart erstellen
+                fig = go.Figure()
+                fig.add_trace(go.Scatter(x=times, y=values, mode='lines+markers', name=field))
+                fig.update_layout(title=f"{field} über die Zeit", xaxis_title="Zeit", yaxis_title=field)
+                chart_containers[field].plotly_chart(fig)

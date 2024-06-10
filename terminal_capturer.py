@@ -1,10 +1,9 @@
 import subprocess
 import sys
 import re
-import streamlit
-
 import json
 import socket
+import yaml
 
 # Host und Port definieren
 HOST = '127.0.0.1'  # localhost
@@ -57,15 +56,15 @@ def attach_to_container(redirect_output=True, output_file="container_output.txt"
     except KeyboardInterrupt:
         print("Abbruch: Docker-Container-Anhängen wurde unterbrochen.")
 
-def read_pattern_from_file(file_path):
+def read_pattern_from_yaml(file_path):
     try:
         with open(file_path, "r") as file:
-            for line in file:
-                if line.startswith("pattern="):
-                    pattern = line.split("=", 1)[1].strip()
-                    return pattern
-        print(f"Pattern nicht in der Datei {file_path} gefunden.")
-        return None
+            config = yaml.safe_load(file)
+            pattern_list = config.get('pattern', [])
+            if pattern_list:
+                return pattern_list[0]  # Nimm das erste Pattern
+            print(f"Pattern nicht in der Datei {file_path} gefunden.")
+            return None
     except FileNotFoundError:
         print(f"Datei {file_path} nicht gefunden.")
         return None
@@ -74,12 +73,6 @@ def read_pattern_from_file(file_path):
         return None
 
 if __name__ == "__main__":
-    pattern = read_pattern_from_file("config.txt")
+    pattern = read_pattern_from_yaml("config.yaml")
     run_docker_compose()
     attach_to_container(redirect_output=True, output_file="container_output.txt", pattern = pattern)
-
-
-
-# Changes:
-# MongoDB (not loose DATA)
-# MongoDB or SQL

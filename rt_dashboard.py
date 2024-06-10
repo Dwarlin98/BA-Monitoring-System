@@ -8,6 +8,8 @@ import queue
 import time
 import yaml
 
+import ast
+
 HOST = '127.0.0.1'  # localhost
 PORT = 65432        # Port über 1023 wählen
 
@@ -50,6 +52,10 @@ def rt_dashboard():
     field_names = config["field_names"]
     print(field_names)
 
+    with st.expander("Graphen deaktivieren"):
+        # Checkboxen für die Auswahl der Graphen
+        checkboxes = {field: st.checkbox(field, value=True) for field in field_names}
+
     # Layout für die Charts
     cols = st.columns(2)
     chart_containers = {}
@@ -61,7 +67,17 @@ def rt_dashboard():
             st.subheader(field)
             chart_containers[field] = st.empty()
 
-    
+
+    def process_value(value):
+        if value.endswith("k"):
+            return int(float(value[:-1]) * 1000)
+        elif value.endswith("M"):
+            return int(float(value[:-1]) * 1000000)
+        else:
+            try:
+                return ast.literal_eval(value)
+            except (ValueError, SyntaxError):
+                return value
 
     def add_row(data):
         current_time = datetime.now().strftime("%H:%M:%S")
@@ -70,7 +86,10 @@ def rt_dashboard():
         # Verwende zip, um Feldnamen und Daten zu kombinieren
         if len(data) == len(field_names):
             for field_name, value in zip(field_names, data):
-                data_with_time[field_name] = value
+                # Verarbeite den Wert entsprechend
+                processed_value = process_value(value)
+                data_with_time[field_name] = processed_value
+
         else:
             print("Daten und Feldnamen stimmen nicht überein")
 
@@ -121,10 +140,10 @@ def rt_dashboard():
 
             # Daten in Streamlit anzeigen
             for field, values in data_dict.items():
-                chart_containers[field].line_chart({"time": times, field: values}, x='time', y=field)
+                if checkboxes[field]:
+                    chart_containers[field].line_chart({"time": times, field: values}, x='time', y=field)
 
 
     while True:
         process_data()
         time.sleep(1)
-

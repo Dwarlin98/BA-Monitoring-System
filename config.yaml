@@ -18,3 +18,5 @@ field_names:
 - UL_nok
 - UL_percent
 - UL_bsr
+pattern:
+- ^lte
