@@ -31,28 +31,25 @@ def attach_to_container(redirect_output=True, output_file="container_output.txt"
     try:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client_socket:
             client_socket.connect((HOST, PORT))
-            with open(output_file, "w") as f:
-                process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, bufsize=1, universal_newlines=True)
-                for line in iter(process.stdout.readline, ""):
-                    if pattern:
-                        if re.search(pattern, line):
-                            if redirect_output:
-                                    line = line.replace("|", "")
-                                    data_list = line.split()
-                                    data_list = [item.strip() for item in data_list]
-                                    #sys.stdout.write(line)  # Output im Terminal anzeigen
-                                    sys.stdout.write(str(data_list))  # Output im Terminal anzeigen
-                                    sys.stdout.flush()
-                                    data_to_send = data_list
-                                    json_data = json.dumps(data_to_send)
-                                    client_socket.sendall(json_data.encode())
-                                    print(f'Datenpaket gesendet')
-                            f.write(line)  # Output in Datei schreiben
-                    else:
+            process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, bufsize=1, universal_newlines=True)
+            for line in iter(process.stdout.readline, ""):
+                if pattern:
+                    if re.search(pattern, line):
                         if redirect_output:
-                            sys.stdout.write(line)  # Output im Terminal anzeigen
-                            sys.stdout.flush()
-                        f.write(line)  # Output in Datei schreiben
+                                line = line.replace("|", "")
+                                data_list = line.split()
+                                data_list = [item.strip() for item in data_list]
+                                #sys.stdout.write(line)  # Output im Terminal anzeigen
+                                sys.stdout.write(str(data_list))  # Output im Terminal anzeigen
+                                sys.stdout.flush()
+                                data_to_send = data_list
+                                json_data = json.dumps(data_to_send)
+                                client_socket.sendall(json_data.encode())
+                                print(f'Datenpaket gesendet')
+                else:
+                    if redirect_output:
+                        sys.stdout.write(line)  # Output im Terminal anzeigen
+                        sys.stdout.flush()
     except KeyboardInterrupt:
         print("Abbruch: Docker-Container-Anhängen wurde unterbrochen.")
 
