@@ -50,7 +50,6 @@ def rt_dashboard():
 
     config = load_config()
     field_names = config["field_names"]
-    print(field_names)
 
     with st.expander("Graphen deaktivieren"):
         # Checkboxen für die Auswahl der Graphen
