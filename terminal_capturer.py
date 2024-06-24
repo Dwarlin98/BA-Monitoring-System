@@ -21,9 +21,9 @@ def run_docker_compose():
     except subprocess.CalledProcessError as e:
         # Fehlerbehandlung, falls der Befehl fehlschlägt
         print("Fehler beim Ausführen des Docker-Compose-Befehls:")
-        print(e.output.decode())  # Fehlermeldung ausgeben
+        print(e.output.decode())
 
-def attach_to_container(redirect_output=True, output_file="container_output.txt", pattern=None):
+def attach_to_container(redirect_output=True, pattern=None):
     # Terminalbefehl als Liste von Strings definieren
     command = ["docker", "container", "attach", "srsenb_zmq"]
 
@@ -39,8 +39,7 @@ def attach_to_container(redirect_output=True, output_file="container_output.txt"
                                 line = line.replace("|", "")
                                 data_list = line.split()
                                 data_list = [item.strip() for item in data_list]
-                                #sys.stdout.write(line)  # Output im Terminal anzeigen
-                                sys.stdout.write(str(data_list))  # Output im Terminal anzeigen
+                                sys.stdout.write(str(data_list))
                                 sys.stdout.flush()
                                 data_to_send = data_list
                                 json_data = json.dumps(data_to_send)
@@ -48,7 +47,7 @@ def attach_to_container(redirect_output=True, output_file="container_output.txt"
                                 print(f'Datenpaket gesendet')
                 else:
                     if redirect_output:
-                        sys.stdout.write(line)  # Output im Terminal anzeigen
+                        sys.stdout.write(line)
                         sys.stdout.flush()
     except KeyboardInterrupt:
         print("Abbruch: Docker-Container-Anhängen wurde unterbrochen.")
@@ -59,7 +58,7 @@ def read_pattern_from_yaml(file_path):
             config = yaml.safe_load(file)
             pattern_list = config.get('pattern', [])
             if pattern_list:
-                return pattern_list[0]  # Nimm das erste Pattern
+                return pattern_list[0]
             print(f"Pattern nicht in der Datei {file_path} gefunden.")
             return None
     except FileNotFoundError:
@@ -72,4 +71,4 @@ def read_pattern_from_yaml(file_path):
 if __name__ == "__main__":
     pattern = read_pattern_from_yaml("config.yaml")
     run_docker_compose()
-    attach_to_container(redirect_output=True, output_file="container_output.txt", pattern = pattern)
+    attach_to_container(redirect_output=True, pattern = pattern)

@@ -17,8 +17,6 @@ def db_dashboard():
         existing_collections = backupDB.list_collection_names()
         
         st.title("Monitoring-System der Fakultät für Digitale Transformation")   
-        #st.write("Hier können Sie allgemeine Informationen anzeigen oder Aktionen durchführen.")    
-
         st.header("Datenbank-Dashboard")
 
         option = st.selectbox(
