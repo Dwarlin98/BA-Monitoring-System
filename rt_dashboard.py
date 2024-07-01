@@ -14,7 +14,7 @@ HOST = '127.0.0.1'  # localhost
 PORT = 65432        # Port über 1023 wählen
 
 # MongoDB-Verbindung herstellen
-client = MongoClient("mongodb://localhost:27017/")
+client = MongoClient("mongodb://admin:admin@localhost:27018/")
 db = client["Messungen"]
 
 # Prüfen, welche Messungen bereits existieren, und die nächste Nummer bestimmen

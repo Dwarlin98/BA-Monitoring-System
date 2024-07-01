@@ -3,3 +3,5 @@ container_output.txt
 /Backup
 .python-version
 /__pycache__
+/db
+.DS_Store

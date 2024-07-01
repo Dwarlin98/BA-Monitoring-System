@@ -2,7 +2,7 @@ import streamlit as st
 from pymongo import MongoClient
 import plotly.graph_objs as go
 
-clientDB = MongoClient("mongodb://localhost:27017/")
+clientDB = MongoClient("mongodb://admin:admin@localhost:27018/")
 backupDB = clientDB["Messungen"]
 
 def db_dashboard():
