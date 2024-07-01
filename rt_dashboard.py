@@ -7,8 +7,8 @@ import threading
 import queue
 import time
 import yaml
-
 import ast
+
 
 HOST = '127.0.0.1'  # localhost
 PORT = 65432        # Port über 1023 wählen
@@ -38,7 +38,6 @@ data_queue = queue.Queue()
 def rt_dashboard():
 
     st.title("Monitoring-System der Fakultät für Digitale Transformation")  
-        #st.write("Hier können Sie allgemeine Informationen anzeigen oder Aktionen durchführen.")    
 
     st.header("Live-Dashboard")
 
@@ -55,13 +54,13 @@ def rt_dashboard():
         # Checkboxen für die Auswahl der Graphen
         checkboxes = {field: st.checkbox(field, value=True) for field in field_names}
 
-    # Layout für die Charts
+    # Layout für die Graphen
     cols = st.columns(2)
     chart_containers = {}
 
-    # Create empty containers for each field to store charts
+    # Leere Container für jedes Feld um die Container anzuzeigen
     for idx, field in enumerate(field_names):
-        col_idx = idx % 2  # Alternate columns
+        col_idx = idx % 2 
         with cols[col_idx]:
             st.subheader(field)
             chart_containers[field] = st.empty()
@@ -141,7 +140,6 @@ def rt_dashboard():
             for field, values in data_dict.items():
                 if checkboxes[field]:
                     chart_containers[field].line_chart({"time": times, field: values}, x='time', y=field)
-
 
     while True:
         process_data()

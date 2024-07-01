@@ -75,10 +75,10 @@ def main():
 
         st.header(" ")
         st.header("SRS-RAN Capturer starten")
-        script_running = st.empty()  # Placeholder for script running status
+        script_running = st.empty()  
 
         if st.button("Script starten"):
-            start_script(script_running)  # Passing placeholders
+            start_script(script_running)  
 
         st.header(" ")
 
