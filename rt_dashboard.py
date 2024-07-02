@@ -34,7 +34,6 @@ collection = db[new_collection_name]
 
 data_queue = queue.Queue()
 
-# Funktion für die Messungen-Seite
 def rt_dashboard():
 
     st.title("Monitoring-System der Fakultät für Digitale Transformation")  
