@@ -12,8 +12,7 @@ def db_dashboard():
 
     with container_DB:
 
-
-        # Prüfen, welche Messungen bereits existieren, und die nächste Nummer bestimmen
+        # Prüfen, welche Messungen bereits existieren
         existing_collections = backupDB.list_collection_names()
         
         st.title("Monitoring-System der Fakultät für Digitale Transformation")   
@@ -37,16 +36,13 @@ def db_dashboard():
         cols = st.columns(2)
         chart_containers = {}
 
-        # Create empty containers for each field to store charts
+        # Erstellen der leeren Container für jedes Feld in der Collection
         for idx, field in enumerate(field_names):
-            col_idx = idx % 2  # Alternate columns
+            col_idx = idx % 2 
             with cols[col_idx]:
-                #st.subheader(field)
-                chart_containers[field] = st.empty()
-        
+                chart_containers[field] = st.empty()        
 
         all_data = list(collection.find({}, {"_id": 0}))
-
 
         if all_data:
             # Daten in separate Listen für Streamlit umwandeln
