@@ -76,6 +76,7 @@ def rt_dashboard():
             except (ValueError, SyntaxError):
                 return value
 
+
     def add_row(data):
         current_time = datetime.now().strftime("%H:%M:%S")
         data_with_time = {"time": current_time}
