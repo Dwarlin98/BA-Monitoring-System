@@ -18,5 +18,23 @@ field_names:
 - UL_nok
 - UL_percent
 - UL_bsr
+field_names2:
+- signal_cc2
+- signal_pci2
+- signal_rsrp2
+- signal_pl2
+- signal_cfo2
+- DL_mcs2
+- DL_snr2
+- DL_iter2
+- DL_brate2
+- DL_bler2
+- DL_ta_us2
+- UL_mcs2
+- UL_buff2
+- UL_brate2
+- UL_bler2
 pattern:
 - ^lte
+pattern2:
+- ^\s\s0

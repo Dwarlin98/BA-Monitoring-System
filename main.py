@@ -44,31 +44,53 @@ def main():
         st.title("Monitoring-System der Fakultät für Digitale Transformation")
 
         col1, col2 = st.columns([0.9,0.1])
+        col4, col5 = st.columns([0.5,0.5])
+        col7, col8 = st.columns([0.5,0.5])
 
         with col1:
             st.header("Konfigurationsseite")
+            st.header("Konfiguration der Spaltennamen")
         
         with col2:
             if st.button("Streamlit beenden", type="primary", help="über diesen Button wird die Streamlit Anwendung beendet ohne dabei den Capturer zu beenden"):
                 stop_streamlit()
         
-        st.header(" ")
-
-        st.header("Konfiguration der Spaltennamen")
-        field_names = st.text_area(label=" ", value="\n".join(config["field_names"]), 
-                                   height=300, help="In dieser Box können die Namen für die einzelnen Spalten festgelegt werden. Jede einzelne Spaltenbezeichnung wird auf eine eigene Zeile geschrieben")
-        if st.button("Spaltennamen speichern"):
-            config["field_names"] = field_names.split("\n")
-            save_config(config)
-            st.success("Spaltennamen gespeichert und konfiguriert")
-
-        st.header("Konfiguration des Terminal-Capturer Patterns")
-        pattern = st.text_area(label=" ", value="\n".join(config["pattern"]), 
-                               help="Hier wird das Pattern für den Terminal Capturer festgelegt")
-        if st.button("Pattern speichern"):
-            config["pattern"] = pattern.split("\n")
-            save_config(config)
-            st.success("Pattern gespeichert")
+        with col4:
+            st.subheader("Quelle 1")
+            field_names = st.text_area(label=" ", value="\n".join(config["field_names"]), 
+                                    height=300, help="In dieser Box können die Namen für die einzelnen Spalten festgelegt werden. Jede einzelne Spaltenbezeichnung wird auf eine eigene Zeile geschrieben")
+            if st.button("Spaltennamen speichern"):
+                config["field_names"] = field_names.split("\n")
+                save_config(config)
+                st.success("Spaltennamen gespeichert und konfiguriert")
+            st.header("Konfiguration des Terminal-Capturer Patterns")
+        
+        with col5:
+            st.subheader("Quelle 2")
+            field_names2 = st.text_area(label=" ", value="\n".join(config["field_names2"]), 
+                                    height=300, help="In dieser Box können die Namen für die einzelnen Spalten festgelegt werden. Jede einzelne Spaltenbezeichnung wird auf eine eigene Zeile geschrieben")
+            if st.button("Spaltennamen 2 speichern"):
+                config["field_names2"] = field_names2.split("\n")
+                save_config(config)
+                st.success("Spaltennamen 2 gespeichert und konfiguriert")
+        
+        with col7:
+            st.subheader("Quelle 1")
+            pattern = st.text_area(label=" ", value="\n".join(config["pattern"]), 
+                                help="Hier wird das Pattern für den Terminal Capturer festgelegt")
+            if st.button("Pattern speichern"):
+                config["pattern"] = pattern.split("\n")
+                save_config(config)
+                st.success("Pattern gespeichert")
+            
+        with col8:
+            st.subheader("Quelle 2")
+            pattern2 = st.text_area(label=" ", value="\n".join(config["pattern2"]), 
+                                help="Hier wird das Pattern für den Terminal Capturer festgelegt", key="pattern2TA")
+            if st.button("Pattern 2 speichern"):
+                config["pattern2"] = pattern2.split("\n")
+                save_config(config)
+                st.success("Pattern 2 gespeichert")
 
         st.header(" ")
         st.header("SRS-RAN Capturer starten")
