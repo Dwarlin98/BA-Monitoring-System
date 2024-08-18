@@ -55,13 +55,11 @@ def main():
         
         with col3:
             st.header("Command Quelle 1")
-            st.text_area(label=" ", key="ta01",value="\n".join(config["field_names"]), 
-                                    height=70, help="In dieser Box können die Namen für die einzelnen Spalten festgelegt werden. Jede einzelne Spaltenbezeichnung wird auf eine eigene Zeile geschrieben")
+            st.text_area(label=" ", key="ta01", value="\n".join(config["command1"]), height=70)
         
         with col6:
             st.header("Command Quelle 2")
-            st.text_area(label=" ", key="ta02",value="\n".join(config["field_names"]), 
-                                    height=70, help="In dieser Box können die Namen für die einzelnen Spalten festgelegt werden. Jede einzelne Spaltenbezeichnung wird auf eine eigene Zeile geschrieben")
+            st.text_area(label=" ", key="ta02", value="\n".join(config["command2"]), height=70)
 
         with col1:
             st.header("Konfigurationsseite")
@@ -75,7 +73,7 @@ def main():
         
         with col4:
             st.subheader("Quelle 1")
-            field_names = st.text_area(label=" ", value="\n".join(config["field_names"]), 
+            field_names = st.text_area(label=" ",key="ta03" ,value="\n".join(config["field_names"]), 
                                     height=300, help="In dieser Box können die Namen für die einzelnen Spalten festgelegt werden. Jede einzelne Spaltenbezeichnung wird auf eine eigene Zeile geschrieben")
             if st.button("Spaltennamen speichern"):
                 config["field_names"] = field_names.split("\n")
@@ -88,7 +86,7 @@ def main():
 
         with col5:
             st.subheader("Quelle 2")
-            field_names2 = st.text_area(label=" ", value="\n".join(config["field_names2"]), 
+            field_names2 = st.text_area(label=" ",key="ta04" ,value="\n".join(config["field_names2"]), 
                                     height=300, help="In dieser Box können die Namen für die einzelnen Spalten festgelegt werden. Jede einzelne Spaltenbezeichnung wird auf eine eigene Zeile geschrieben")
             if st.button("Spaltennamen 2 speichern"):
                 config["field_names2"] = field_names2.split("\n")

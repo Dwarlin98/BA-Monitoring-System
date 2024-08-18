@@ -38,3 +38,7 @@ pattern:
 - ^lte
 pattern2:
 - ^\s\s0
+command1:
+- docker container attach srsenb_zmq
+command2:
+- docker container attach srsue_zmq
