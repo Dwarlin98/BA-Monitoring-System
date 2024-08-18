@@ -44,13 +44,31 @@ def main():
         st.title("Monitoring-System der Fakultät für Digitale Transformation")
 
         col1, col2 = st.columns([0.9,0.1])
+        st.divider()
+        col11, col12 = st.columns([0.5,0.5])
+        col3, col6 = st.columns([0.5,0.5])
+        st.divider()
+        col9, col10 = st.columns([0.5,0.5])
         col4, col5 = st.columns([0.5,0.5])
+        st.divider()
         col7, col8 = st.columns([0.5,0.5])
+        
+        with col3:
+            st.header("Command Quelle 1")
+            st.text_area(label=" ", key="ta01",value="\n".join(config["field_names"]), 
+                                    height=70, help="In dieser Box können die Namen für die einzelnen Spalten festgelegt werden. Jede einzelne Spaltenbezeichnung wird auf eine eigene Zeile geschrieben")
+        
+        with col6:
+            st.header("Command Quelle 2")
+            st.text_area(label=" ", key="ta02",value="\n".join(config["field_names"]), 
+                                    height=70, help="In dieser Box können die Namen für die einzelnen Spalten festgelegt werden. Jede einzelne Spaltenbezeichnung wird auf eine eigene Zeile geschrieben")
 
         with col1:
             st.header("Konfigurationsseite")
-            st.header("Konfiguration der Spaltennamen")
         
+        with col11:
+            st.header("Konfiguration der Befehle")
+                    
         with col2:
             if st.button("Streamlit beenden", type="primary", help="über diesen Button wird die Streamlit Anwendung beendet ohne dabei den Capturer zu beenden"):
                 stop_streamlit()
@@ -65,6 +83,9 @@ def main():
                 st.success("Spaltennamen gespeichert und konfiguriert")
             st.header("Konfiguration des Terminal-Capturer Patterns")
         
+        with col9:
+            st.header("Konfiguration der Spaltennamen")
+
         with col5:
             st.subheader("Quelle 2")
             field_names2 = st.text_area(label=" ", value="\n".join(config["field_names2"]), 
